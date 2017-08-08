@@ -1,8 +1,14 @@
-## Welcome to GitHub Pages Docs
+## Building NetWeaver Gateway Services
 
-You can use the [editor on GitHub](https://github.com/grahamrobbo/building_gateway_services/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Thanks for your interest in my presentation "Building NetWeaver Gateway Services".
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+You can grab the ABAP code here and install it on your own system to look at it more closely and see it in action.
+
+The earlier version of this presentation can be found at [teched16_example](https://grahamrobbo.github.io/teched16_example/).
+
+This presentation has been updated for the 2017 SAUG Sydney Summit.
+
+![Image](./img/saug_logo.png)
 
 ### Markdown
 
