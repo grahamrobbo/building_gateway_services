@@ -12,6 +12,7 @@ This presentation has been updated for the 2017 SAUG Sydney Summit where it will
 
 ## Installation
 ![Image](./img/abapgit.png)
+
 To install the code onto your ABAP system you will need to use the [abapGit](http://abapgit.org) project by [@larshp](https://github.com/larshp).
 
 If you haven't seen abapGit before I highly recommend you take a good look at it. If you find it useful perhaps you could consider joining the project and making your own contributions?
@@ -21,17 +22,27 @@ abapGit will transfer the ABAP code from my GitHub repository to a package on yo
 ### Setup
 
 Once all objects are activated you will need to maintain the MPC and DPC locations. The below screenshot shows where to find this in the IMG.
+
 ![Image](./img/img.jpg)
+
 ![Image](./img/assign_model.jpg)
+
 You will then need to register the service
+
 ![Image](./img/add_service.jpg)
+
 Select the "Add Service" button
+
 ![Image](./img/addservice.jpg)
+
 The final step to get the Gateway Service running is to add a system alias.
-![Image](./img/system_alias.jpg)
+
+![Image](./img/system_alias.png)
+
 For all other aspects about registering and activating SAP Gateway services consult the SAP documentation.
 
 Enjoy!
+
 ![Image](./img/robbo.png)
 Photo by M Gillet
 
