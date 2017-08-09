@@ -17,11 +17,15 @@ This presentation has been updated for the 2017 SAUG Sydney Summit where it will
 
 To install the code onto your ABAP system you will need to use the [abapGit](http://abapgit.org) project by [@larshp](https://github.com/larshp).
 
+Instructions for installing abapGit can be found [here](http://larshp.github.io/abapGit/).
+
 If you haven't seen abapGit before I highly recommend you take a good look at it. If you find it useful perhaps you could consider joining the project and making your own contributions?
 
-abapGit will transfer the ABAP code from my GitHub repository to a package on your ABAP system. I recommend using a local package just for this purpose called something like `$GWDEMO`.
+Use the abapGit `Clone` option to link an ABAP package to my GitHub repository. I recommend using a local package just for this purpose called something like `$GWDEMO`.
 
-The ABAP code is stored in the `src` subdirectory of the repository so you will need to adjust your repository settings in abapGit before pulling down the code.
+![Image](./img/clone_repo.png)
+
+The ABAP code is stored in the `src` subdirectory of this repository so you will need to adjust your repository settings in abapGit before pulling down the code.
 
 To do this navigate to the `Repo settings` item in the repository `Advanced` menu ...
 
@@ -30,6 +34,10 @@ To do this navigate to the `Repo settings` item in the repository `Advanced` men
 ... and set the Starting folder to `/src/`.
 
 ![Image](./img/repo_settings2.png)
+
+Finally select the `Pull` option to load all the ABAP artifacts into your nominated package.
+
+![Image](./img/pull_repo.png)
 
 ### Setup
 
