@@ -25,17 +25,7 @@ Use the abapGit `Clone` option to link an ABAP package to my GitHub repository. 
 
 ![Image](./img/clone_repo.png)
 
-The ABAP code is stored in the `src` subdirectory of this repository so you will need to adjust your repository settings in abapGit before pulling down the code.
-
-To do this navigate to the `Repo settings` item in the repository `Advanced` menu ...
-
-![Image](./img/repo_settings1.png)
-
-... and set the Starting folder to `/src/`.
-
-![Image](./img/repo_settings2.png)
-
-Finally select the `Pull` option to load all the ABAP artifacts into your nominated package.
+Select the `Pull` option to load all the ABAP artifacts into your nominated package.
 
 ![Image](./img/pull_repo.png)
 
