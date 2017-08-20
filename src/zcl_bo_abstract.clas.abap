@@ -42,67 +42,58 @@ CLASS ZCL_BO_ABSTRACT IMPLEMENTATION.
 
   METHOD call_all_getters.
 *--------------------------------------------------------------------*
-* Fills the entity data object by calling the GET methods for each   *
-* field in turn.                                                     *
+* This method fills the entity properties by calling the GET method  *
+* for each property in turn.                                         *
 *                                                                    *
 * To work both the GET method and the returning parameter must have  *
 * the same name as the ABAP field.                                   *
 *                                                                    *
-* i.e. KUNNR filled by returning parameter KUNNR of method GET_KUNNR.*
+* i.e. KUNNR property filled by calling ...                          *
+*                                                                    *
+*              entity->kunnr = me->get_kunnr( ).                     *
+*                                                                    *
 *--------------------------------------------------------------------*
 
-    DATA: struct_descr TYPE REF TO cl_abap_structdescr,
+    DATA: properties   TYPE stringtab,
+          struct_descr TYPE REF TO cl_abap_structdescr,
           parameter    TYPE abap_parmbind,
           parameters   TYPE abap_parmbind_tab.
+
+    TRY.
+* If model and entity name are available we can determine the entity properties from the model ...
+        LOOP AT model->get_entity_properties( entity_name ) REFERENCE INTO DATA(model_property).
+          APPEND model_property->name TO properties.
+        ENDLOOP.
+      CATCH cx_root.
+* ... otherwise we use rtts to determine entity properties from entity itself.
+        TRY.
+            struct_descr ?= cl_abap_structdescr=>describe_by_data_ref( entity ).
+            LOOP AT struct_descr->components REFERENCE INTO DATA(component).
+              APPEND component->name TO properties.
+            ENDLOOP.
+          CATCH cx_root.
+        ENDTRY.
+    ENDTRY.
 
     ASSIGN entity->* TO FIELD-SYMBOL(<entity>).
     CHECK sy-subrc = 0.
 
-* If model and entity name are passed we can determine the ABAP field names from the model ...
-    IF model IS BOUND AND entity_name IS NOT INITIAL.
+    LOOP AT properties REFERENCE INTO DATA(property).
+      CLEAR parameters.
       TRY.
-          DATA(properties) = model->get_entity_properties( entity_name ).
-          LOOP AT properties REFERENCE INTO DATA(property).
-            CLEAR parameters.
-            TRY.
-                ASSIGN COMPONENT property->name OF STRUCTURE <entity> TO FIELD-SYMBOL(<comp>).
-                IF sy-subrc = 0.
-                  parameter-name = property->name.
-                  parameter-kind = cl_abap_objectdescr=>returning.
-                  GET REFERENCE OF <comp> INTO parameter-value.
-                  INSERT parameter INTO TABLE parameters.
-                  DATA(method_name) = |GET_{ property->name }|.
-                  CALL METHOD me->(method_name)
-                    PARAMETER-TABLE parameters.
-                ENDIF.
-              CATCH cx_sy_dyn_call_error.
-            ENDTRY.
-          ENDLOOP.
-        CATCH cx_root.
+          ASSIGN COMPONENT property->* OF STRUCTURE <entity> TO FIELD-SYMBOL(<comp>).
+          IF sy-subrc = 0.
+            parameter-name = property->*.
+            parameter-kind = cl_abap_objectdescr=>returning.
+            GET REFERENCE OF <comp> INTO parameter-value.
+            INSERT parameter INTO TABLE parameters.
+            DATA(method_name) = |GET_{ property->* }|.
+            CALL METHOD me->(method_name)
+              PARAMETER-TABLE parameters.
+          ENDIF.
+        CATCH cx_sy_dyn_call_error.
       ENDTRY.
-    ELSE.
-* ... otherwise we use RTTS to determine ABAP field names from entity itself.
-      TRY.
-          struct_descr ?= cl_abap_structdescr=>describe_by_data_ref( entity ).
-          LOOP AT struct_descr->components REFERENCE INTO DATA(component).
-            CLEAR parameters.
-            TRY.
-                ASSIGN COMPONENT component->name OF STRUCTURE <entity> TO <comp>.
-                IF sy-subrc = 0.
-                  parameter-name = component->name.
-                  parameter-kind = cl_abap_objectdescr=>returning.
-                  GET REFERENCE OF <comp> INTO parameter-value.
-                  INSERT parameter INTO TABLE parameters.
-                  method_name = |GET_{ component->name }|.
-                  CALL METHOD me->(method_name)
-                    PARAMETER-TABLE parameters.
-                ENDIF.
-              CATCH cx_sy_dyn_call_error.
-            ENDTRY.
-          ENDLOOP.
-        CATCH cx_root.
-      ENDTRY.
-    ENDIF.
+    ENDLOOP.
 
   ENDMETHOD.
 
