@@ -2,11 +2,11 @@
 
 Thanks for your interest in my presentation "Building NetWeaver Gateway Services".
 
-You can find the slides [here](./slides/slides.pdf).
+You can find the slides [here](./slides/slides.html).
 
 You can grab the ABAP code from the repository and install it on your own system to look at it more closely, see it in action and fiddle with it yourself.
 
-The earlier version of this presentation can be found at [teched16_example](https://grahamrobbo.github.io/teched16_example/).
+The earlier versions of this presentation can be found at [teched16_example](https://grahamrobbo.github.io/teched16_example/).
 
 This presentation has been updated for the 2017 SAUG Sydney Summit where it will be delivered by [@jasper07](jasper07) & [@grahamrobbo](https://github.com/grahamrobbo).
 
