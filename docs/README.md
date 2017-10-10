@@ -1,6 +1,6 @@
-## Building NetWeaver Gateway Services
+## Building SAP Gateway Services
 
-Thanks for your interest in my presentation "Building NetWeaver Gateway Services".
+Thanks for your interest in my presentation "Building SAP Gateway Services".
 
 You can find the slides [here](./slides/slides.html).
 
