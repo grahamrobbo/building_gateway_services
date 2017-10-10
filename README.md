@@ -1,4 +1,4 @@
-# Building SAP NetWeaver Gateway Services
+# Building SAP Gateway Services
 
 Example code for SAUG Summit 2017 presentation on Building Gateway Services delivered by [@grahamrobbo](https://github.com/grahamrobbo) and [@jasper07](https://github.com/jasper07).
 
