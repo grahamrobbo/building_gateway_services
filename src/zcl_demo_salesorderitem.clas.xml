@@ -4,7 +4,6 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>ZCL_DEMO_SALESORDERITEM</CLSNAME>
-    <VERSION>1</VERSION>
     <LANGU>E</LANGU>
     <DESCRIPT>Demo Sales Order Item</DESCRIPT>
     <STATE>1</STATE>
