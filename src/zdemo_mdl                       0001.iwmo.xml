@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_IWMO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <_-IWBEP_-I_MGW_OHD>
+    <_-IWBEP_-I_MGW_OHD>
+     <TECHNICAL_NAME>ZDEMO_MDL</TECHNICAL_NAME>
+     <VERSION>0001</VERSION>
+     <CLASS_NAME>ZCL_DEMO_MPC_CUST</CLASS_NAME>
+     <CREATED_BY>DEVELOPER</CREATED_BY>
+     <CHANGED_BY>DEVELOPER</CHANGED_BY>
+     <CHANGED_TIMESTMP>20191119142513</CHANGED_TIMESTMP>
+    </_-IWBEP_-I_MGW_OHD>
+   </_-IWBEP_-I_MGW_OHD>
+   <_-IWBEP_-I_MGW_OHT>
+    <_-IWBEP_-I_MGW_OHT>
+     <TECHNICAL_NAME>ZDEMO_MDL</TECHNICAL_NAME>
+     <VERSION>0001</VERSION>
+     <LANGUAGE>E</LANGUAGE>
+     <DESCRIPTION>Building Gateway Services Demo Model</DESCRIPTION>
+    </_-IWBEP_-I_MGW_OHT>
+   </_-IWBEP_-I_MGW_OHT>
+  </asx:values>
+ </asx:abap>
+</abapGit>
