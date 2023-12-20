@@ -27,6 +27,6 @@ METHOD get_segmentation.
 * Sample extension of BO class with new method                       *
 *--------------------------------------------------------------------*
   DATA(name) = zif_demo_customer~get_company_name( ).
-  segmentation = name(1).
+  segmentation = |{ name(1) CASE = UPPER }|.
 ENDMETHOD.
 ENDCLASS.

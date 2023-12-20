@@ -5,31 +5,53 @@ class ZCL_DEMO_SALESORDER definition
 
 public section.
 
-  interfaces ZIF_DEMO_SALESORDER .
   interfaces ZIF_GW_METHODS .
+  interfaces ZIF_DEMO_SALESORDER .
 
-  aliases GET
-    for ZIF_DEMO_SALESORDER~GET .
   aliases GET_CREATED_AT
     for ZIF_DEMO_SALESORDER~GET_CREATED_AT .
   aliases GET_SO_ID
     for ZIF_DEMO_SALESORDER~GET_SO_ID .
-  aliases GET_USING_SO_ID
-    for ZIF_DEMO_SALESORDER~GET_USING_SO_ID .
+
+  class-methods GET
+    importing
+      !NODE_KEY type SNWD_NODE_KEY
+    returning
+      value(INSTANCE) type ref to ZIF_DEMO_SALESORDER
+    raising
+      ZCX_DEMO_BO .
+  class-methods GET_USING_SO_ID
+    importing
+      !SO_ID type SNWD_SO_ID
+    returning
+      value(INSTANCE) type ref to ZIF_DEMO_SALESORDER
+    raising
+      ZCX_DEMO_BO .
+protected section.
+
+  types:
+    BEGIN OF instance_type,
+        node_key TYPE snwd_node_key,
+        instance TYPE REF TO zif_demo_salesorder,
+      END OF instance_type .
+  types:
+    instance_ttype TYPE TABLE OF instance_type .
+
+  class-data INSTANCES type INSTANCE_TTYPE .
+  data SALESORDER_DATA type ZDEMO_SALESORDER .
 
   methods CONSTRUCTOR
     importing
       !NODE_KEY type SNWD_NODE_KEY
     raising
       ZCX_DEMO_BO .
-protected section.
-
   methods LOAD_SALESORDER_DATA
     importing
       !NODE_KEY type SNWD_NODE_KEY
     raising
       ZCX_DEMO_BO .
   PRIVATE SECTION.
+
 ENDCLASS.
 
 
@@ -45,11 +67,55 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get.
+
+    TRY.
+        DATA(inst) = instances[ node_key = node_key ].
+      CATCH cx_sy_itab_line_not_found.
+        inst-node_key = node_key.
+        DATA(class_name) = get_subclass( 'ZCL_DEMO_SALESORDER' ).
+        CREATE OBJECT inst-instance
+          TYPE (class_name)
+          EXPORTING
+            node_key = inst-node_key.
+        APPEND inst TO instances.
+    ENDTRY.
+
+    instance ?= inst-instance.
+  ENDMETHOD.
+
+
+  METHOD get_using_so_id.
+
+    DATA: lv_so_id TYPE snwd_so_id.
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+      EXPORTING
+        input  = so_id
+      IMPORTING
+        output = lv_so_id.
+
+    SELECT SINGLE node_key
+      FROM snwd_so
+      INTO @DATA(node_key)
+      WHERE so_id = @lv_so_id.
+    IF sy-subrc = 0.
+      instance = get( node_key ).
+    ELSE.
+      RAISE EXCEPTION TYPE zcx_demo_bo
+        EXPORTING
+          textid  = zcx_demo_bo=>not_found
+          bo_type = 'SalesOrder'
+          bo_id   = |{ so_id }|.
+    ENDIF.
+
+  ENDMETHOD.
+
+
   METHOD load_salesorder_data.
 
     SELECT SINGLE *
       FROM snwd_so
-      INTO CORRESPONDING FIELDS OF zif_demo_salesorder~salesorder_data
+      INTO CORRESPONDING FIELDS OF salesorder_data
       WHERE node_key = node_key.
 
     IF sy-subrc NE 0.
@@ -62,31 +128,13 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_demo_salesorder~get.
-
-    TRY.
-        DATA(inst) = zif_demo_salesorder~instances[ node_key = node_key ].
-      CATCH cx_sy_itab_line_not_found.
-        inst-node_key = node_key.
-        DATA(class_name) = get_subclass( 'ZCL_DEMO_SALESORDER' ).
-        CREATE OBJECT inst-instance
-          TYPE (class_name)
-          EXPORTING
-            node_key = inst-node_key.
-        APPEND inst TO zif_demo_salesorder~instances.
-    ENDTRY.
-
-    instance ?= inst-instance.
-  ENDMETHOD.
-
-
   METHOD zif_demo_salesorder~get_created_at.
-    created_at = me->zif_demo_salesorder~salesorder_data-created_at.
+    created_at = me->salesorder_data-created_at.
   ENDMETHOD.
 
 
   METHOD zif_demo_salesorder~get_customer.
-    customer = zcl_demo_customer=>get( zif_demo_salesorder~salesorder_data-buyer_guid ).
+    customer = zcl_demo_customer=>get( salesorder_data-buyer_guid ).
   ENDMETHOD.
 
 
@@ -131,38 +179,12 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
 
 
   METHOD zif_demo_salesorder~get_node_key.
-    node_key = zif_demo_salesorder~salesorder_data-node_key.
+    node_key = salesorder_data-node_key.
   ENDMETHOD.
 
 
-  method ZIF_DEMO_SALESORDER~GET_SO_ID.
-    so_id = me->zif_demo_salesorder~salesorder_data-so_id.
-  endmethod.
-
-
-  METHOD zif_demo_salesorder~get_using_so_id.
-
-    DATA: lv_so_id TYPE snwd_so_id.
-    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
-      EXPORTING
-        input  = so_id
-      IMPORTING
-        output = lv_so_id.
-
-    SELECT SINGLE node_key
-      FROM snwd_so
-      INTO @DATA(node_key)
-      WHERE so_id = @lv_so_id.
-    IF sy-subrc = 0.
-      instance = get( node_key ).
-    ELSE.
-      RAISE EXCEPTION TYPE zcx_demo_bo
-        EXPORTING
-          textid  = zcx_demo_bo=>not_found
-          bo_type = 'SalesOrder'
-          bo_id   = |{ so_id }|.
-    ENDIF.
-
+  METHOD zif_demo_salesorder~get_so_id.
+    so_id = me->salesorder_data-so_id.
   ENDMETHOD.
 
 

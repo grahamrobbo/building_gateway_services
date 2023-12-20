@@ -5,11 +5,9 @@ class ZCL_DEMO_CUSTOMER definition
 
 public section.
 
-  interfaces ZIF_DEMO_CUSTOMER .
   interfaces ZIF_GW_METHODS .
+  interfaces ZIF_DEMO_CUSTOMER .
 
-  aliases GET
-    for ZIF_DEMO_CUSTOMER~GET .
   aliases GET_BP_ID
     for ZIF_DEMO_CUSTOMER~GET_BP_ID .
   aliases GET_CITY
@@ -26,23 +24,46 @@ public section.
     for ZIF_DEMO_CUSTOMER~GET_POSTAL_CODE .
   aliases GET_STREET
     for ZIF_DEMO_CUSTOMER~GET_STREET .
-  aliases GET_USING_BP_ID
-    for ZIF_DEMO_CUSTOMER~GET_USING_BP_ID .
+
+  class-methods GET
+    importing
+      !NODE_KEY type SNWD_NODE_KEY
+    returning
+      value(INSTANCE) type ref to ZIF_DEMO_CUSTOMER
+    raising
+      ZCX_DEMO_BO .
+  class-methods GET_USING_BP_ID
+    importing
+      !BP_ID type SNWD_PARTNER_ID
+    returning
+      value(INSTANCE) type ref to ZIF_DEMO_CUSTOMER
+    raising
+      ZCX_DEMO_BO .
+protected section.
+
+  types:
+    BEGIN OF instance_type,
+        node_key TYPE snwd_node_key,
+        instance TYPE REF TO zif_demo_customer,
+      END OF instance_type .
+  types:
+    instance_ttype TYPE TABLE OF instance_type .
+
+  class-data INSTANCES type INSTANCE_TTYPE .
+  class-data:
+    countries TYPE TABLE OF t005t .
+  data CUSTOMER_DATA type ZDEMO_CUSTOMER .
 
   methods CONSTRUCTOR
     importing
       !NODE_KEY type SNWD_NODE_KEY
     raising
       ZCX_DEMO_BO .
-PROTECTED SECTION.
-
-  CLASS-DATA countries TYPE TABLE OF t005t.
-
-  METHODS load_customer_data
-    IMPORTING
-      !node_key TYPE snwd_node_key
-    RAISING
-      zcx_demo_bo .
+  methods LOAD_CUSTOMER_DATA
+    importing
+      !NODE_KEY type SNWD_NODE_KEY
+    raising
+      ZCX_DEMO_BO .
   PRIVATE SECTION.
 ENDCLASS.
 
@@ -59,38 +80,18 @@ CLASS ZCL_DEMO_CUSTOMER IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD load_customer_data.
-
-    SELECT SINGLE bp~node_key, bp~bp_id, bp~company_name,
-      ad~street, ad~city, ad~postal_code, ad~country
-      FROM snwd_bpa AS bp
-        INNER JOIN snwd_ad AS ad
-        ON bp~address_guid = ad~node_key
-      INTO CORRESPONDING FIELDS OF @zif_demo_customer~customer_data
-      WHERE bp~node_key = @node_key.
-
-    IF sy-subrc NE 0.
-      RAISE EXCEPTION TYPE zcx_demo_bo
-        EXPORTING
-          textid  = zcx_demo_bo=>not_found
-          bo_type = 'DEMO_CUSTOMER'
-          bo_id   = |{ node_key }|.
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD zif_demo_customer~get.
+  METHOD get.
 
     TRY.
-        DATA(inst) = zif_demo_customer~instances[ node_key = node_key ].
+        DATA(inst) = instances[ node_key = node_key ].
       CATCH cx_sy_itab_line_not_found.
         inst-node_key = node_key.
-        DATA(class_name) = get_subclass( 'ZCL_DEMO_CUSTOMER' ).
+        DATA(class_name) = get_subclass( 'ZIF_DEMO_CUSTOMER' ).
         CREATE OBJECT inst-instance
           TYPE (class_name)
           EXPORTING
             node_key = inst-node_key.
-        APPEND inst TO zif_demo_customer~instances.
+        APPEND inst TO instances.
     ENDTRY.
 
     instance ?= inst-instance.
@@ -98,58 +99,7 @@ CLASS ZCL_DEMO_CUSTOMER IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_demo_customer~get_bp_id.
-    bp_id = me->zif_demo_customer~customer_data-bp_id.
-  ENDMETHOD.
-
-
-  method ZIF_DEMO_CUSTOMER~GET_CITY.
-    city = me->zif_demo_customer~customer_data-city.
-  endmethod.
-
-
-  METHOD zif_demo_customer~get_company_name.
-    company_name = me->zif_demo_customer~customer_data-company_name.
-  ENDMETHOD.
-
-
-  method ZIF_DEMO_CUSTOMER~GET_COUNTRY.
-    country = me->zif_demo_customer~customer_data-country.
-  endmethod.
-
-
-  METHOD zif_demo_customer~get_country_text.
-    TRY.
-        country_text = countries[ land1 = zif_demo_customer~customer_data-country ]-landx50.
-      CATCH cx_sy_itab_line_not_found.
-        SELECT land1 landx50
-          FROM t005t
-          APPENDING CORRESPONDING FIELDS OF TABLE countries
-          WHERE spras = sy-langu
-          AND land1 = zif_demo_customer~customer_data-country.
-        IF sy-subrc = 0.
-          country_text = countries[ land1 = zif_demo_customer~customer_data-country ]-landx50.
-        ENDIF.
-    ENDTRY.
-  ENDMETHOD.
-
-
-  METHOD zif_demo_customer~get_node_key.
-    node_key = me->zif_demo_customer~customer_data-node_key.
-  ENDMETHOD.
-
-
-  method ZIF_DEMO_CUSTOMER~GET_POSTAL_CODE.
-    postal_code = me->zif_demo_customer~customer_data-postal_code.
-  endmethod.
-
-
-  METHOD zif_demo_customer~get_street.
-    street = me->zif_demo_customer~customer_data-street.
-  ENDMETHOD.
-
-
-  METHOD zif_demo_customer~get_using_bp_id.
+  METHOD get_using_bp_id.
 
     DATA: lv_bp_id TYPE snwd_partner_id.
     CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
@@ -171,6 +121,77 @@ CLASS ZCL_DEMO_CUSTOMER IMPLEMENTATION.
           bo_type = 'Customer'
           bo_id   = |{ bp_id }|.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD load_customer_data.
+
+    SELECT SINGLE bp~node_key, bp~bp_id, bp~company_name,
+      ad~street, ad~city, ad~postal_code, ad~country
+      FROM snwd_bpa AS bp
+        INNER JOIN snwd_ad AS ad
+        ON bp~address_guid = ad~node_key
+      INTO CORRESPONDING FIELDS OF @customer_data
+      WHERE bp~node_key = @node_key.
+
+    IF sy-subrc NE 0.
+      RAISE EXCEPTION TYPE zcx_demo_bo
+        EXPORTING
+          textid  = zcx_demo_bo=>not_found
+          bo_type = 'DEMO_CUSTOMER'
+          bo_id   = |{ node_key }|.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_bp_id.
+    bp_id = me->customer_data-bp_id.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_city.
+    city = me->customer_data-city.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_company_name.
+    company_name = me->customer_data-company_name.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_country.
+    country = me->customer_data-country.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_country_text.
+    TRY.
+        country_text = countries[ land1 = customer_data-country ]-landx50.
+      CATCH cx_sy_itab_line_not_found.
+        SELECT land1 landx50
+          FROM t005t
+          APPENDING CORRESPONDING FIELDS OF TABLE countries
+          WHERE spras = sy-langu
+          AND land1 = customer_data-country.
+        IF sy-subrc = 0.
+          country_text = countries[ land1 = customer_data-country ]-landx50.
+        ENDIF.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_node_key.
+    node_key = me->customer_data-node_key.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_postal_code.
+    postal_code = me->customer_data-postal_code.
+  ENDMETHOD.
+
+
+  METHOD zif_demo_customer~get_street.
+    street = me->customer_data-street.
   ENDMETHOD.
 
 
