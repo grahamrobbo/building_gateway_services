@@ -279,7 +279,11 @@ CLASS ZCL_DEMO_SALESORDERITEM IMPLEMENTATION.
           ).
         ENDLOOP.
 
-      CATCH cx_sy_itab_line_not_found zcx_demo_bo INTO DATA(exception).
+      CATCH cx_sy_itab_line_not_found.
+        RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
+          EXPORTING
+            textid = /iwbep/cx_mgw_busi_exception=>precondition_required.
+      CATCH zcx_demo_bo INTO DATA(exception).
         RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
           EXPORTING
             textid   = /iwbep/cx_mgw_busi_exception=>business_error
