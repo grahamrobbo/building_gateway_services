@@ -354,7 +354,7 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
         IF io_tech_request_context->has_inlinecount( ) = abap_true.
           DATA dbcount TYPE int4 .
           SELECT COUNT(*)
-            INTO dbcount
+            INTO @dbcount
             FROM snwd_so
             WHERE (where_clause).
           es_response_context-inlinecount = dbcount. "why is this a string?
