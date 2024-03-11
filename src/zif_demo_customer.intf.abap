@@ -1,72 +1,47 @@
-INTERFACE zif_demo_customer
-  PUBLIC .
+interface ZIF_DEMO_CUSTOMER
+  public .
 
 
-  INTERFACES zif_gw_methods .
+  interfaces ZIF_GW_METHODS .
 
-  TYPES:
-    BEGIN OF instance_type,
-      node_key TYPE snwd_node_key,
-      instance TYPE REF TO zif_demo_customer,
-    END OF instance_type .
-  TYPES:
-    instance_ttype TYPE TABLE OF instance_type .
-
-  CLASS-DATA instances TYPE instance_ttype .
-  DATA customer_data TYPE zdemo_customer .
-
-  CLASS-METHODS get
-    IMPORTING
-      !node_key       TYPE snwd_node_key
-    RETURNING
-      VALUE(instance) TYPE REF TO zif_demo_customer
-    RAISING
-      zcx_demo_bo .
-  CLASS-METHODS get_using_bp_id
-    IMPORTING
-      !bp_id          TYPE snwd_partner_id
-    RETURNING
-      VALUE(instance) TYPE REF TO zif_demo_customer
-    RAISING
-      zcx_demo_bo .
-  METHODS get_node_key
-    RETURNING
-      VALUE(node_key) TYPE snwd_node_key
-    RAISING
-      zcx_demo_bo .
-  METHODS get_bp_id
-    RETURNING
-      VALUE(bp_id) TYPE snwd_partner_id
-    RAISING
-      zcx_demo_bo .
-  METHODS get_company_name
-    RETURNING
-      VALUE(company_name) TYPE snwd_company_name
-    RAISING
-      zcx_demo_bo .
-  METHODS get_street
-    RETURNING
-      VALUE(street) TYPE snwd_street
-    RAISING
-      zcx_demo_bo .
-  METHODS get_city
-    RETURNING
-      VALUE(city) TYPE snwd_city
-    RAISING
-      zcx_demo_bo .
-  METHODS get_postal_code
-    RETURNING
-      VALUE(postal_code) TYPE snwd_postal_code
-    RAISING
-      zcx_demo_bo .
-  METHODS get_country
-    RETURNING
-      VALUE(country) TYPE snwd_country
-    RAISING
-      zcx_demo_bo .
-  METHODS get_country_text
-    RETURNING
-      VALUE(country_text) TYPE landx50
-    RAISING
-      zcx_demo_bo .
-ENDINTERFACE.
+  methods GET_NODE_KEY
+    returning
+      value(NODE_KEY) type SNWD_NODE_KEY
+    raising
+      ZCX_DEMO_BO .
+  methods GET_BP_ID
+    returning
+      value(BP_ID) type SNWD_PARTNER_ID
+    raising
+      ZCX_DEMO_BO .
+  methods GET_COMPANY_NAME
+    returning
+      value(COMPANY_NAME) type SNWD_COMPANY_NAME
+    raising
+      ZCX_DEMO_BO .
+  methods GET_STREET
+    returning
+      value(STREET) type SNWD_STREET
+    raising
+      ZCX_DEMO_BO .
+  methods GET_CITY
+    returning
+      value(CITY) type SNWD_CITY
+    raising
+      ZCX_DEMO_BO .
+  methods GET_POSTAL_CODE
+    returning
+      value(POSTAL_CODE) type SNWD_POSTAL_CODE
+    raising
+      ZCX_DEMO_BO .
+  methods GET_COUNTRY
+    returning
+      value(COUNTRY) type SNWD_COUNTRY
+    raising
+      ZCX_DEMO_BO .
+  methods GET_COUNTRY_TEXT
+    returning
+      value(COUNTRY_TEXT) type LANDX50
+    raising
+      ZCX_DEMO_BO .
+endinterface.

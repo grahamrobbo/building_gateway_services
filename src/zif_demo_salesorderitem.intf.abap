@@ -4,24 +4,6 @@ INTERFACE zif_demo_salesorderitem
 
   INTERFACES zif_gw_methods .
 
-  TYPES:
-    BEGIN OF instance_type,
-      node_key TYPE snwd_node_key,
-      instance TYPE REF TO zif_demo_salesorderitem,
-    END OF instance_type .
-  TYPES:
-    instance_ttype TYPE TABLE OF instance_type .
-
-  CLASS-DATA instances TYPE instance_ttype .
-  DATA item_data TYPE zdemo_salesorderitem .
-
-  CLASS-METHODS get
-    IMPORTING
-      !node_key       TYPE snwd_node_key
-    RETURNING
-      VALUE(instance) TYPE REF TO zif_demo_salesorderitem
-    RAISING
-      zcx_demo_bo .
   METHODS get_node_key
     RETURNING
       VALUE(node_key) TYPE snwd_node_key
