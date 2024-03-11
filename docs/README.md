@@ -1,10 +1,10 @@
 ## Building SAP Gateway Services
 
-Thanks for your interest in my presentation "Building SAP Gateway Services".
+Thanks for your interest in my "Building SAP Gateway Services" presentation.
 
 You can find the slides [here](./slides/slides.html).
 
-You can grab the ABAP code from the repository and install it on your own system to look at it more closely, see it in action and fiddle with it yourself.
+Grab the ABAP code from the repository and install it on your own system to look at it more closely, see it in action and fiddle with it yourself.
 
 ## Installation
 
