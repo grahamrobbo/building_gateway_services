@@ -2,7 +2,7 @@
 
 Thanks for your interest in my "Building SAP Gateway Services" presentation.
 
-You can find the slides [here](./docs/slides/slides.html).
+You can find the slides [here](./docs/slides).
 
 Grab the ABAP code from the repository and install it on your own system to look at it more closely, see it in action and fiddle with it yourself.
 
