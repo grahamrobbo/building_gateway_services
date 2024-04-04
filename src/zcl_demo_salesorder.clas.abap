@@ -344,10 +344,13 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
     SHIFT where_clause LEFT DELETING LEADING ' &'.
     REPLACE ALL OCCURRENCES OF '&' IN where_clause WITH 'AND'.
 
-    DATA: top  TYPE i,
-          skip TYPE i.
+    DATA: top       TYPE i,
+          skip      TYPE i,
+          skiptoken TYPE string.
+    CONSTANTS: max_page_size TYPE i VALUE 50.
     top = io_tech_request_context->get_top( ). "why does this API return a string?
     skip = io_tech_request_context->get_skip( ).
+    skiptoken = io_tech_request_context->get_skiptoken( ).
 
     TRY.
         " $inlinecount=allpages
@@ -360,14 +363,31 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
           es_response_context-inlinecount = dbcount. "why is this a string?
         ENDIF.
 
+        ASSIGN COMPONENT 'NODE_KEY' OF STRUCTURE <entity> TO FIELD-SYMBOL(<node_key>).
+
         " Get primary keys
         SELECT node_key
           INTO CORRESPONDING FIELDS OF @<entity>
           FROM snwd_so
           WHERE (where_clause)
           ORDER BY (orderby_clause).
+
+          " $skiptoken
+          IF skiptoken IS NOT INITIAL.
+            CHECK skiptoken = <node_key>.
+            CLEAR skiptoken.
+          ENDIF.
+
+          " $skip
           CHECK sy-dbcnt > skip.
+          IF lines( <entityset> ) EQ max_page_size.
+            es_response_context-skiptoken = <node_key>.
+            EXIT.
+          ENDIF.
+
           APPEND <entity> TO <entityset>.
+
+          " $top
           IF top > 0 AND lines( <entityset> ) GE top.
             EXIT.
           ENDIF.
@@ -384,33 +404,10 @@ CLASS ZCL_DEMO_SALESORDER IMPLEMENTATION.
     " $count
     CHECK io_tech_request_context->has_count( ) NE abap_true.
 
-    " $skiptoken
-    CONSTANTS: max_page_size TYPE i VALUE 50.
-    DATA: index_start TYPE i,
-          index_end   TYPE i.
-
-    IF lines( <entityset> ) > max_page_size.
-      index_start = io_tech_request_context->get_skiptoken( ).
-      IF index_start = 0. index_start = 1. ENDIF.
-      index_end = index_start + max_page_size - 1.
-      LOOP AT <entityset> REFERENCE INTO entity.
-        IF index_start > 1.
-          DELETE <entityset>.
-          SUBTRACT 1 FROM index_start.
-        ELSE.
-          CHECK sy-tabix > max_page_size.
-          DELETE <entityset>.
-        ENDIF.
-      ENDLOOP.
-      IF lines( <entityset> ) = max_page_size.
-        es_response_context-skiptoken = index_end + 1.
-      ENDIF.
-    ENDIF.
-
     " Fill entities
     LOOP AT <entityset> REFERENCE INTO entity.
       ASSIGN entity->* TO <entity>.
-      ASSIGN COMPONENT 'NODE_KEY' OF STRUCTURE <entity> TO FIELD-SYMBOL(<node_key>).
+      ASSIGN COMPONENT 'NODE_KEY' OF STRUCTURE <entity> TO <node_key>.
       TRY.
           zcl_demo_salesorder=>get( <node_key> )->zif_gw_methods~map_to_entity(
                 EXPORTING
